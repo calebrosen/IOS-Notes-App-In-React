@@ -1,0 +1,88 @@
+*,body,html {
+  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #000;
+}
+
+.notes-container {
+  height: 100vh;
+  background-color: #000;
+  box-sizing: border-box;
+}
+
+.dateAtTop {
+  text-align: center;
+  padding: 0.8rem 0 0.15rem 0;
+  color: gray;
+  font-size: 1.25rem;
+}
+
+.notes-textarea {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  caret-color: #e8bf44;
+  font-weight: 700;
+  font-size: 2.25rem;
+  outline: none;
+  resize: none;
+  padding: 15px;
+  box-sizing: border-box;
+  line-height: 1.6;
+}
+
+.notes-textarea::placeholder {
+  color: #555;
+  opacity: 1; 
+}
+
+ /* Hiding doneText by default */
+.doneText {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #e8bf44;
+  display: none;
+}
+
+.undoButton {
+  transform: scaleY(-1);
+  position: relative;
+  margin-top: 0.2rem;
+  color: #e8bf44;
+  font-size: 1.35rem;
+  padding-top: 0.23rem;
+  border: 2px solid #e8bf44;
+  border-radius: 50%;
+  transition: 0.75s ease;
+  display: inline-block;
+  width: max-content;
+}
+
+.redoButton {
+  transform: scaleY(-1);
+  position: relative;
+  margin-top: 0.2rem;
+  color: #e8bf44;
+  padding-top: 0.23rem;
+  font-size: 1.35rem;
+  border: 2px solid #e8bf44;
+  border-radius: 50%;
+  transition: 1s ease;
+  display: inline-block;
+  padding-bottom: 0.1rem;
+  width: max-content;
+}
+
+.undoButton:active, .redoButton:active {
+  color: white;
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: flex-end;
+  max-height: 3.4rem;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 1rem;
+}
