@@ -1,8 +1,16 @@
-# React + Vite
+# Apple IOS Notes Web Copy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## This is a copy of Apple's IOS Notes App on iPhone and iPad. 
+Built in React, it is modular and can be built upon.
+As of now, it has no external dependencies
 
-Currently, two official plugins are available:
+## Roadmap
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+- Allow formatting of notes
+
+- Background typography
+
+- Local storage saves
+
+- Multiple notes at a time

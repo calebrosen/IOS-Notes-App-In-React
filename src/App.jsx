@@ -3,8 +3,8 @@ import "./App.css";
 
 const NotesApp = () => {
   const textAreaRef = useRef(null);
-  const historyRef = useRef([]); // Undo history
-  const redoRef = useRef([]); // Redo history
+  const historyRef = useRef([]);
+  const redoRef = useRef([]);
   const timeoutRef = useRef(null);
   const [doneTextID] = useState('doneTextSpan');
 
@@ -16,7 +16,8 @@ const NotesApp = () => {
       const currentValue = textAreaRef.current.value;
       if (historyRef.current.length === 0 || currentValue !== historyRef.current[historyRef.current.length - 1]) {
         historyRef.current.push(currentValue);
-        redoRef.current = []; // Clear redo history on new input
+         // Clearing redo history on new input
+        redoRef.current = [];
       }
     };
 
@@ -35,7 +36,8 @@ const NotesApp = () => {
       const currentValue = textAreaRef.current.value;
       if (historyRef.current.length === 0 || currentValue !== historyRef.current[historyRef.current.length - 1]) {
         historyRef.current.push(currentValue);
-        redoRef.current = []; // Clear redo history on new input
+         // Clearing redo history on new input
+        redoRef.current = [];
       }
     }, 2000);
   };
@@ -44,7 +46,8 @@ const NotesApp = () => {
   const handleUndo = () => {
     if (historyRef.current.length > 1) {
       const currentValue = historyRef.current.pop();
-      redoRef.current.push(currentValue); // Push current value to redo history
+      // Pushign current value to redo history
+      redoRef.current.push(currentValue); 
       const previousValue = historyRef.current[historyRef.current.length - 1];
       textAreaRef.current.value = previousValue;
     } else if (historyRef.current.length === 1) {
@@ -55,9 +58,12 @@ const NotesApp = () => {
 
   const handleRedo = () => {
     if (redoRef.current.length > 0) {
-      const redoValue = redoRef.current.pop(); // Get last redo value
-      historyRef.current.push(redoValue); // Push it to history
-      textAreaRef.current.value = redoValue; // Set it in the textarea
+      // Get last redo value
+      const redoValue = redoRef.current.pop(); 
+      // Push it to history
+      historyRef.current.push(redoValue); 
+      // Setting it in the textarea
+      textAreaRef.current.value = redoValue;
     }
   };
 
@@ -91,27 +97,38 @@ const NotesApp = () => {
     tmp.style.display = 'inline';
   }
 
-  const handleUnfocus = () => {
-    const tmp = document.getElementById(doneTextID);
-    tmp.style.display = 'none';
+  const handleUnfocus = (e) => {
+    if (!e.relatedTarget || !e.relatedTarget.classList || !e.relatedTarget.classList.contains('topButtons')) {
+      const tmp = document.getElementById(doneTextID);
+      if (tmp) {
+        tmp.style.display = 'none';
+      }
+    }
   };
 
   return (
     <div className="notes-container">
-      <div className='buttonsContainer'>
-        <button className="undoButton" onClick={handleUndo}>↩</button>
-        <button className="redoButton" onClick={handleRedo}>↪</button>
-        <span className='doneText' id={doneTextID}>Done</span>
+    <div className='buttonsContainer'>
+      <div className='notesTopLeft hoverCursor'>
+        <span className='backButtonTop'>⌵</span>
+        <span className='notesTextBackButtonTop'>Notes</span>
       </div>
-      <DateTimeComponent />
-      <textarea
-        ref={textAreaRef}
-        onFocus={handleFocus}
-        onInput={handleInputChange}
-        onBlur={handleUnfocus}
-        className="notes-textarea"
-      />
+      
+      <div className='rightButtons'>
+        <button className="undoButton topButtons hoverCursor" onClick={handleUndo}>↩</button>
+        <button className="redoButton topButtons hoverCursor" onClick={handleRedo}>↪</button>
+        <span className='doneText hoverCursor' id={doneTextID}>Done</span>
+      </div>
     </div>
+    <DateTimeComponent />
+    <textarea
+      ref={textAreaRef}
+      onFocus={handleFocus}
+      onInput={handleInputChange}
+      onBlur={handleUnfocus}
+      className="notes-textarea"
+    />
+  </div>
   );
 };
 

@@ -78,11 +78,41 @@
   color: white;
 }
 
+.hoverCursor {
+  cursor: pointer;
+}
+
 .buttonsContainer {
   display: flex;
-  justify-content: flex-end;
-  max-height: 3.4rem;
+  justify-content: space-between; /* Space between left and right elements */
   align-items: center;
-  gap: 15px;
+  max-height: 3.4rem;
   margin-bottom: 1rem;
+}
+
+.notesTopLeft {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+}
+
+.backButtonTop {
+  transform: rotate(90deg) scale(1.75);
+  color: #e8bf44;
+  background: none;
+  font-weight: 900;
+  display: inline-block;
+  margin-right: 0.1rem;
+}
+
+.notesTextBackButtonTop {
+  color: #e8bf44;
+  font-size: 1.6rem;
+}
+
+.rightButtons {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  gap: 15px;
 }
