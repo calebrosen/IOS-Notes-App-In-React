@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import "./App.css";
 
 const NotesApp = () => {
@@ -6,7 +6,7 @@ const NotesApp = () => {
   const historyRef = useRef([]);
   const redoRef = useRef([]);
   const timeoutRef = useRef(null);
-  const [doneTextID] = useState('doneTextSpan');
+  const doneTextID = useId();
 
   useEffect(() => {
     //Autofocusing the textarea
@@ -62,7 +62,7 @@ const NotesApp = () => {
       // Get last redo value
       const redoValue = redoRef.current.pop(); 
       // Push it to history
-      historyRef.current.push(redoValue); 
+      historyRef.current.push(redoValue);
       // Setting it in the textarea
       textAreaRef.current.value = redoValue;
     }
@@ -116,8 +116,8 @@ const NotesApp = () => {
       </div>
       
       <div className='rightButtons'>
-        <button className="undoButton topButtons hoverCursor" onClick={handleUndo}>↩</button>
-        <button className="redoButton topButtons hoverCursor" onClick={handleRedo}>↪</button>
+        <button className="undoButton topButtons hoverCursor" type="button" onClick={handleUndo}>↩</button>
+        <button className="redoButton topButtons hoverCursor" type="button" onClick={handleRedo}>↪</button>
         <span className='doneText hoverCursor' id={doneTextID}>Done</span>
       </div>
     </div>
@@ -127,6 +127,7 @@ const NotesApp = () => {
       onFocus={handleFocus}
       onInput={handleInputChange}
       onBlur={handleUnfocus}
+      label="Main notes area"
       className="notes-textarea"
     />
   </div>
