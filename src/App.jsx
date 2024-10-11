@@ -9,6 +9,7 @@ const NotesApp = () => {
   const [doneTextID] = useState('doneTextSpan');
 
   useEffect(() => {
+    //Autofocusing the textarea
     textAreaRef.current.focus();
 
     // Capturing history
