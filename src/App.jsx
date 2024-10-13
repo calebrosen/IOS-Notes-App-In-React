@@ -1,4 +1,7 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Dropdown from 'react-bootstrap/Dropdown';
+import { CircleEllipsis, Undo2, Redo2 } from 'lucide-react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 
 const NotesApp = () => {
@@ -6,7 +9,8 @@ const NotesApp = () => {
   const historyRef = useRef([]);
   const redoRef = useRef([]);
   const timeoutRef = useRef(null);
-  const doneTextID = useId();
+  const doneTextRef = useRef();
+  const [textAreaStyled, setTextAreaStyled] = useState(false);
 
   useEffect(() => {
     //Autofocusing the textarea
@@ -93,19 +97,52 @@ const NotesApp = () => {
     return <p className="dateAtTop">{currentDateAndTime}</p>;
   };
 
+  // on inside click of the textarea
   const handleFocus = () => {
-    const tmp = document.getElementById(doneTextID);
-    tmp.style.display = 'inline';
+    doneTextRef.current.style.display = 'inline';
   }
 
+  // On outside click of the textarea
   const handleUnfocus = (e) => {
     if (!e.relatedTarget || !e.relatedTarget.classList || !e.relatedTarget.classList.contains('topButtons')) {
-      const tmp = document.getElementById(doneTextID);
-      if (tmp) {
-        tmp.style.display = 'none';
-      }
+        doneTextRef.current.style.display = 'none';
     }
   };
+
+  const NoteSettingIcon = () => {
+    return (
+      <Dropdown>
+        <Dropdown.Toggle className='noteSettingIcon topButtons' id="dropdown-basic">
+        <CircleEllipsis size={43} className='circleEllipsis' strokeWidth={1.25} />
+        </Dropdown.Toggle>
+  
+        <Dropdown.Menu>
+          {/* Only showing plain if something is selected */}
+          {textAreaStyled == true && (
+            <Dropdown.Item onClick={removeAllTextAreaClasses}>Plain</Dropdown.Item>
+          )}
+          <Dropdown.Item onClick={addSimpleBorderToTextArea}>Border</Dropdown.Item>
+          <Dropdown.Item onClick={addSimpleLinesToTextArea}>Lines</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  }
+
+  const addSimpleBorderToTextArea = () => {
+    setTextAreaStyled(true);
+    textAreaRef.current.classList.add("textAreaSimpleBorder");
+  }
+
+  const addSimpleLinesToTextArea = () => {
+    setTextAreaStyled(true);
+    textAreaRef.current.classList.add("textAreaSimpleLines");
+  }
+  
+  const removeAllTextAreaClasses = () => {
+    setTextAreaStyled(false);
+    textAreaRef.current.classList.remove("textAreaSimpleBorder");
+    textAreaRef.current.classList.remove("textAreaSimpleLines");
+  }
 
   return (
     <div className="notes-container">
@@ -115,21 +152,28 @@ const NotesApp = () => {
         <span className='notesTextBackButtonTop'>Notes</span>
       </div>
       
-      <div className='rightButtons'>
-        <button className="undoButton topButtons hoverCursor" type="button" onClick={handleUndo}>↩</button>
-        <button className="redoButton topButtons hoverCursor" type="button" onClick={handleRedo}>↪</button>
-        <span className='doneText hoverCursor' id={doneTextID}>Done</span>
+      <div className="rightButtons hoverCursor">
+        <div className="undoAndRedo-container topButtons">
+          <Undo2 className="undoAndRedo" onClick={handleUndo}/>
+        </div>
+        <div className="undoAndRedo-container topButtons">
+          <Redo2 className="undoAndRedo" onClick={handleRedo} />
+        </div>
+        <NoteSettingIcon />
+        <span className='doneText hoverCursor' ref={doneTextRef}>Done</span>
       </div>
     </div>
     <DateTimeComponent />
-    <textarea
-      ref={textAreaRef}
-      onFocus={handleFocus}
-      onInput={handleInputChange}
-      onBlur={handleUnfocus}
-      label="Main notes area"
-      className="notes-textarea"
-    />
+    <div className="textAreaContainer">
+      <textarea
+        ref={textAreaRef}
+        onFocus={handleFocus}
+        onInput={handleInputChange}
+        onBlur={handleUnfocus}
+        label="Main notes area"
+        className="notes-textarea"
+      />
+    </div>
   </div>
   );
 };

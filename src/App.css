@@ -1,4 +1,4 @@
-*,body,html {
+textarea,body,html {
   font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-color: #000;
 }
@@ -18,19 +18,37 @@
 
 .notes-textarea {
   width: 100%;
-  height: 100%;
-  background-color: #000;
+  height: 100vh;
   color: #fff;
-  border: none;
   caret-color: #e8bf44;
+  margin: 0 1rem;
   font-weight: 700;
-  font-size: 2.25rem;
-  outline: none;
+  font-size: 2.13rem;
   resize: none;
-  padding: 15px;
+  padding: 0.24rem 0.4rem;
   box-sizing: border-box;
-  line-height: 1.6;
+  outline: none;
+  border: none;
+  line-height: 122%;
+  --webkit-scrollbar: hidden;
 }
+
+.textAreaContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.textAreaSimpleBorder {
+  background-image: linear-gradient(to bottom, transparent, transparent calc(2.25rem - 0.15rem), lightgray calc(2.25rem - 0.15rem)) !important;
+  background-size: 100% 2rem !important;
+  border: 1px solid #ccc !important;
+}
+
+.textAreaSimpleLines {
+  background-image: repeating-linear-gradient(to bottom, lightgray 0px, lightgray 0px, transparent 1px, transparent 2.6rem) !important;
+  background-size: 100% 2.6rem !important;
+}
+
 
 .notes-textarea::placeholder {
   color: #555;
@@ -41,6 +59,7 @@
 .doneText {
   font-size: 1.65rem;
   font-weight: 700;
+  margin-top: 5.25px;
   color: #e8bf44;
   display: none;
 }
@@ -51,31 +70,37 @@
   margin-top: 0.2rem;
   color: #e8bf44;
   font-size: 1.35rem;
-  padding-top: 0.23rem;
+  padding: 0.1rem 0.25rem;
   border: 2px solid #e8bf44;
   border-radius: 50%;
-  transition: 0.75s ease;
+  transition: 0.15s ease;
   display: inline-block;
   width: max-content;
+  background-color: #000;
 }
 
 .redoButton {
+  background-color: #000;
   transform: scaleY(-1);
   position: relative;
-  margin-top: 0.2rem;
   color: #e8bf44;
-  padding-top: 0.23rem;
   font-size: 1.35rem;
   border: 2px solid #e8bf44;
   border-radius: 50%;
-  transition: 1s ease;
+  transition: 0.15s ease;
   display: inline-block;
   padding-bottom: 0.1rem;
   width: max-content;
 }
 
 .undoButton:active, .redoButton:active {
-  color: white;
+  color: #977b26;
+  border: 2px solid #977b26;
+}
+
+.undoButton:hover, .redoButton:hover {
+  color: #977b26;
+  border: 2px solid #977b26;
 }
 
 .hoverCursor {
@@ -84,7 +109,7 @@
 
 .buttonsContainer {
   display: flex;
-  justify-content: space-between; /* Space between left and right elements */
+  justify-content: space-between;
   align-items: center;
   max-height: 3.4rem;
   margin-bottom: 1rem;
@@ -107,6 +132,7 @@
 
 .notesTextBackButtonTop {
   color: #e8bf44;
+  padding: 5.25px;
   font-size: 1.6rem;
 }
 
@@ -116,3 +142,51 @@
   padding: 0.25rem 0.5rem;
   gap: 15px;
 }
+
+.noteSettingIcon {
+  align-items: center;
+  margin-top: 0.4rem;
+  background-color: #000;
+  color: #e8bf44;
+  border: none;
+}
+
+.undoAndRedo-container {
+  display: inline-flex;
+  margin-top: 0.55rem;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #e8bf44;
+  border-radius: 50%;
+  padding: 5.25px;
+}
+
+.undoAndRedo {
+  font-size: 1.4rem;
+  color: #e8bf44;
+}
+
+.undoAndRedo:hover, .undoAndRedo:active {
+  font-size: 1.4rem;
+  color: #977b26;
+  border-color: #977b26;
+  background: none;
+}
+
+/* Overwriting default bootstrap behavior */
+.dropdown-toggle:active, .dropdown-toggle:hover {
+  color: #977b26 !important;
+  background: none !important;
+}
+
+.dropdown-toggle, .btn, .btn-primary {
+  background: none !important;
+  color: #e8bf44 !important;
+}
+
+.dropdown-toggle::after {
+  display:none;
+}
+
+/* End bootstrap override
+
