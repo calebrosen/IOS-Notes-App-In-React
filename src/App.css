@@ -89,6 +89,8 @@ textarea,body,html {
 
 .notesTextBackButtonTop {
   color: #e8bf44;
+  align-items: center;
+  vertical-align: center;
   font-size: 1.6rem;
 }
 
@@ -145,6 +147,76 @@ textarea,body,html {
 .dropdown-toggle::after {
   display:none;
 }
+/* End bootstrap override */
 
-/* End bootstrap override
+.notesListContainer {
+  text-align: left;
+  padding: 1.35rem 1rem 1rem;
+}
 
+.searchInputNotesList {
+  background-color: #353535;
+  color: #FFF;
+  min-width: 100%;
+  border-radius: 6px;
+  border: none;
+  font-size: 1.3rem;
+  padding: 4px 2.5rem;
+}
+
+.searchInputNotesList::placeholder {
+  color: #98989f;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px; /* Adjust as needed */
+  pointer-events: none; /* Makes the icon not interactable */
+}
+
+
+h1.notesListH1 {
+  color: #FFF;
+  font-size: 2.35rem;
+  font-weight: 700;
+}
+
+.notesListFooter {
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.161);
+  box-shadow: 0 8px 16px 0 rgba(153, 153, 153, 0.37);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 1rem;
+}
+
+
+.notesListCountText {
+  flex: 1;
+  text-align: center;
+  color: #FFF;
+}
+
+.newNoteButton {
+  color: #e8bf44;
+}
+.newNoteButton:hover, .newNoteButton:active {
+  color: #977b26;
+}
+
+.existingNote {
+  color: #FFF;
+  
+}
