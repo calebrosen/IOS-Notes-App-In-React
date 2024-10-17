@@ -217,6 +217,11 @@ h1.notesListH1 {
 }
 
 .existingNote {
+  color: #FFF; 
+}
+
+.existingNoteDate {
   color: #FFF;
-  
+  font-weight: 600;
+  font-size: 1.3rem;
 }

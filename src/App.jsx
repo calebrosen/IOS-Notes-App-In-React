@@ -1,7 +1,7 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+import { CircleEllipsis, Redo2, Search, SquarePen, Undo2 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
-import { CircleEllipsis, Undo2, Redo2, Search, SquarePen } from "lucide-react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 const NotesApp = () => {
@@ -12,9 +12,12 @@ const NotesApp = () => {
   const timeoutRef = useRef(null);
   const doneTextRef = useRef();
   const [textAreaStyled, setTextAreaStyled] = useState(false);
+  const [currentNoteInput, setCurrentNoteInput] = useState("");
   const [noteID, setNoteID] = useState("");
+  const [notePreviews, setNotePreviews] = useState([]);
 
   useEffect(() => {
+    GenerateNotePreviews();
     if (renderArea == "note") {
       // Autofocusing the textarea
       textAreaRef.current.focus();
@@ -37,7 +40,7 @@ const NotesApp = () => {
         clearInterval(intervalId);
       };
     }
-    // Only rendeirng when RenderArea is upated
+    // Only rendeirng when RenderArea is updated
   }, [renderArea]);
 
   const handleInputChange = () => {
@@ -47,6 +50,7 @@ const NotesApp = () => {
 
     timeoutRef.current = setTimeout(() => {
       const currentValue = textAreaRef.current.value;
+      setCurrentNoteInput(currentValue);
       if (
         historyRef.current.length === 0 ||
         currentValue !== historyRef.current[historyRef.current.length - 1]
@@ -187,16 +191,84 @@ const NotesApp = () => {
     return tempNoteID;
   };
 
-  const insertNoteIntoLocalStorage = () => {
+  const insertNoteIntoLocalStorage = (noteID) => {
     // My idea is to insert it with a key such as 'IOSNotes' or whatever
-    // Then, as the value, use unix epoch time and do a dash or some character seperator, and then after that just the note content
-    localStorage.setItem("IOSNotesApp", Date.now());
+    // Then, as the value, use unix epoch time and do a dash or some character separator, and then after that just the note content
+    localStorage.setItem(
+      "IOSNotesApp" + noteID,
+      Date.now() + "⌇" + currentNoteInput
+      // I still need to fetch and include note content
+    );
+  };
+
+  // This function comprises of several functions that are used entirely to generate the notes preview on the main notes list landing page
+  const GenerateNotePreviews = () => {
+
+    // Used to generate note date on main list page
+    const getUnixEpochTimeToDate = (unixTimestamp) => {
+      const date = new Date(unixTimestamp * 1);
+
+      const options = {
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        timeZone: "America/New_York",
+        timeZoneName: "short",
+      };
+
+      const formatter = new Intl.DateTimeFormat("en-US", options);
+      return formatter.format(date);
+    };
+
+    
+    // Used to generate note date on main list page
+    const getUnixTimeStamp = (noteContent) => {
+      let index = noteContent.indexOf("⌇");
+      let unixTime = noteContent.substring(0, index);
+      return getUnixEpochTimeToDate(unixTime);
+    };
+
+    
+    // Used to generate note title on main list page
+    const generateNoteTitle = (noteContent) => {
+      let index = noteContent.lastIndexOf("⌇");
+      let title = noteContent.substring(index + 1, index + 36);
+      return title;
+    };
+
+    
+    // Used to get note ID and add to notesPreview array for use on main list page
+    const getNoteID = (key) => {
+      return key.substring(11, key.length);
+    };
+
+    // Looping through each note stored in localstorage and getting the ID, date, and generating a title
+    // Then, setting notePreviews as this array of JSON objects.
+    // notePreviews is then used in MainNotesList and looped over to generate the existing notes
+    const notes = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      if (key.substring(0, 11) === "IOSNotesApp") {
+        const json = {
+          noteID: getNoteID(key),
+          date: getUnixTimeStamp(value),
+          title: generateNoteTitle(value),
+        };
+        notes.push(json);
+      }
+    }
+    setNotePreviews(notes);
   };
 
   const HandleCreateNewNoteClick = () => {
-    setNoteID(generateNoteIdentifier());
+    const tmpNID = generateNoteIdentifier();
+    console.log(tmpNID);
+    setNoteID(tmpNID);
     setRenderArea("note");
-    insertNoteIntoLocalStorage();
+    insertNoteIntoLocalStorage(tmpNID);
   };
 
   const HandleNotesBackButton = () => {
@@ -247,22 +319,6 @@ const NotesApp = () => {
 
   // This is the main notes list that you land on
   const MainNotesList = () => {
-
-    const ExistingNotes = () => {
-
-
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.includes("IOSNotesApp")) {
-          return (
-            <div className='existingNote'>
-              Note
-            </div>
-          )
-        }
-      }
-    }
-
     return (
       <div>
         <div className="notesListContainer">
@@ -273,7 +329,15 @@ const NotesApp = () => {
             </label>
             <input className="searchInputNotesList" placeholder="Search" />
           </div>
-          <ExistingNotes />
+          <div>
+            {notePreviews &&
+              notePreviews.map((note) => (
+                <div key={note.noteID} className="existingNote">
+                  <h3 className="existingNote">{note.title}</h3>
+                  <p className='existingNoteDate'>{note.date}</p>
+                </div>
+              ))}
+          </div>
         </div>
 
         <div className="notesListFooter">
