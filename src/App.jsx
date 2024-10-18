@@ -12,9 +12,12 @@ const NotesApp = () => {
   const timeoutRef = useRef(null);
   const doneTextRef = useRef();
   const [textAreaStyled, setTextAreaStyled] = useState(false);
-  const [currentNoteInput, setCurrentNoteInput] = useState("");
   const [noteID, setNoteID] = useState("");
   const [notePreviews, setNotePreviews] = useState([]);
+  const [notesAmount, setNotesAmount] = useState();
+  const [restoreWith, setRestoreWith] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const searchRef = useRef('');
 
   useEffect(() => {
     GenerateNotePreviews();
@@ -47,10 +50,13 @@ const NotesApp = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
+    const currentValue = textAreaRef.current.value;
+    console.log('updating w current value');
+    updateNoteInStorage(currentValue);
+    console.log('updated w ', currentValue);
 
     timeoutRef.current = setTimeout(() => {
-      const currentValue = textAreaRef.current.value;
-      setCurrentNoteInput(currentValue);
+
       if (
         historyRef.current.length === 0 ||
         currentValue !== historyRef.current[historyRef.current.length - 1]
@@ -61,6 +67,19 @@ const NotesApp = () => {
       }
     }, 2000);
   };
+
+  const updateNoteInStorage = (noteInput) => {
+    console.log(noteID);
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key == "IOSNotesApp" + noteID) {
+        localStorage.setItem("IOSNotesApp" + noteID, Date.now() + "⌇" + noteInput)
+        console.log('SET ITEM');
+      } else {
+        console.log('bad key');
+      }
+    }
+  }
 
   // Restoring previous value
   const handleUndo = () => {
@@ -196,8 +215,7 @@ const NotesApp = () => {
     // Then, as the value, use unix epoch time and do a dash or some character separator, and then after that just the note content
     localStorage.setItem(
       "IOSNotesApp" + noteID,
-      Date.now() + "⌇" + currentNoteInput
-      // I still need to fetch and include note content
+      Date.now() + "⌇"
     );
   };
 
@@ -260,12 +278,13 @@ const NotesApp = () => {
         notes.push(json);
       }
     }
+    setNotesAmount(notes.length);
     setNotePreviews(notes);
   };
 
+  // All this function is doing is setting the states and variables correctly for note rendering
   const HandleCreateNewNoteClick = () => {
     const tmpNID = generateNoteIdentifier();
-    console.log(tmpNID);
     setNoteID(tmpNID);
     setRenderArea("note");
     insertNoteIntoLocalStorage(tmpNID);
@@ -273,52 +292,87 @@ const NotesApp = () => {
 
   const HandleNotesBackButton = () => {
     setNoteID("");
+    setRestoreWith("");
     setRenderArea("list");
   };
 
-  // All this function is doing is setting the state for the create new note rendering
-  const CreateNewNote = () => {
-    return (
-      <div className="notes-container">
-        <div className="buttonsContainer">
-          <div
-            className="notesTopLeft hoverCursor"
-            onClick={HandleNotesBackButton}
-          >
-            <span className="backButtonTop">⌵</span>
-            <span className="notesTextBackButtonTop">Notes</span>
-          </div>
+  //Loading note if one is clicked
+  const LoadExistingNote = (props) => {
+    console.log(props);
+    let valueToRestore;
+    setNoteID(props.noteID);
 
-          <div className="rightButtons hoverCursor">
-            <div className="undoAndRedo-container topButtons">
-              <Undo2 className="undoAndRedo" onClick={handleUndo} />
-            </div>
-            <div className="undoAndRedo-container topButtons">
-              <Redo2 className="undoAndRedo" onClick={handleRedo} />
-            </div>
-            <NoteSettingIcon />
-            <span className="doneText hoverCursor" ref={doneTextRef}>
-              Done
-            </span>
-          </div>
-        </div>
-        <DateTimeComponent />
-        <div className="textAreaContainer">
-          <textarea
-            ref={textAreaRef}
-            onFocus={handleFocus}
-            onInput={handleInputChange}
-            onBlur={handleUnfocus}
-            label="Main notes area"
-            className="notes-textarea"
-          />
-        </div>
-      </div>
-    );
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      
+      if (key === "IOSNotesApp" + props.noteID) {
+        let lastIndex = value.lastIndexOf('⌇');
+        console.log(lastIndex);
+        valueToRestore = value.substring(lastIndex + 1);
+        break;
+      }
+    }
+
+    setRestoreWith(valueToRestore); // Update the state with the value to restore
+    setRenderArea("note"); // Update render area
   };
+
+  // Update the textarea value when restoreWith changes
+  useEffect(() => {
+    RestoreText();
+  }, [restoreWith]);
+
+  const RestoreText = () => {
+    if (restoreWith !== '') {
+      setTimeout(function() {
+        textAreaRef.current.value = restoreWith;
+      }, 250)
+    }
+  }
 
   // This is the main notes list that you land on
   const MainNotesList = () => {
+    function formatDate(date) {
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
+    
+      const todayMonthDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const yesterdayMonthDay = new Date(today.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+      const noteMonthDay = new Date(today.getFullYear(), date.getMonth(), date.getDate());
+    
+      // Checking if the date is today
+      if (noteMonthDay.toDateString() === todayMonthDay.toDateString()) {
+        return "Today";
+      }
+      // Checking if the date is yesterday
+      else if (noteMonthDay.toDateString() === yesterdayMonthDay.toDateString()) {
+        return "Yesterday";
+      }
+      // Checking if the date is within the last 7 days
+      else if (noteMonthDay >= new Date(today.setDate(today.getDate() - 7))) {
+        return date.toLocaleDateString("en-US", { weekday: "long" });
+      }
+
+      // For dates older than 7 days
+      else {
+        return "More than 7 days ago";
+      }
+    }
+
+    const handleSearchChange = (e) => {
+      const val = e.target.value;
+      setSearchText(val);
+    };
+
+    //refocusing to fix issue with unfocus due to handleSearchChange messing with the state
+    useEffect(() => {
+      if (searchRef != '') {
+        searchRef.current.focus()
+      }
+    }, [searchText])
+
     return (
       <div>
         <div className="notesListContainer">
@@ -327,21 +381,30 @@ const NotesApp = () => {
             <label className="searchIcon">
               <Search style={{ color: "#98989f" }} />
             </label>
-            <input className="searchInputNotesList" placeholder="Search" />
+            <input className="searchInputNotesList" onChange={handleSearchChange} value={searchText} ref={searchRef} placeholder="Search" />
           </div>
           <div>
-            {notePreviews &&
-              notePreviews.map((note) => (
-                <div key={note.noteID} className="existingNote">
-                  <h3 className="existingNote">{note.title}</h3>
-                  <p className='existingNoteDate'>{note.date}</p>
+            {filteredNotesPreviews &&
+              filteredNotesPreviews.map((note) => {
+              const dateString = note.date.replace(" at ", " ");
+              const date = new Date(dateString);
+              const time = date.toLocaleTimeString();
+              const formattedDate = formatDate(date);
+              return (
+                <div key={note.noteID} className="existingNote" onClick={() => LoadExistingNote(note)}>
+                <div className='existingNoteDate'>{formattedDate}</div>
+                  <div className='existingNoteInner'>
+                    <h3 className="existingNoteTitle">{note.title}</h3>
+                    <div className='existingNoteTime'>{time}</div>
+                  </div>
                 </div>
-              ))}
+              );
+            })}
           </div>
         </div>
 
         <div className="notesListFooter">
-          <div className="notesListCountText">Notes amount</div>
+          <div className="notesListCountText">{notesAmount > 0 ? `${notesAmount} Notes` : ''}</div>
           <div className="newNoteButton" onClick={HandleCreateNewNoteClick}>
             <SquarePen size={30} />
           </div>
@@ -350,12 +413,59 @@ const NotesApp = () => {
     );
   };
 
+
+
+  const filteredNotesPreviews =
+  notePreviews &&
+  notePreviews.filter((note) =>
+    note.title.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+
   // Conditionally rendering the correct area depending on renderArea variable
   switch (renderArea) {
     case "list":
       return <MainNotesList />;
     case "note":
-      return <CreateNewNote />;
+      return (
+        <div className="notes-container">
+          <div className="buttonsContainer">
+            <div
+              className="notesTopLeft hoverCursor"
+              onClick={HandleNotesBackButton}
+            >
+              <span className="backButtonTop">⌵</span>
+              <span className="notesTextBackButtonTop">Notes</span>
+            </div>
+  
+            <div className="rightButtons hoverCursor">
+              <div className="undoAndRedo-container topButtons">
+                <Undo2 className="undoAndRedo" onClick={handleUndo} />
+              </div>
+              <div className="undoAndRedo-container topButtons">
+                <Redo2 className="undoAndRedo" onClick={handleRedo} />
+              </div>
+              <NoteSettingIcon />
+              <span className="doneText hoverCursor" ref={doneTextRef}>
+                Done
+              </span>
+            </div>
+          </div>
+          <DateTimeComponent />
+          <div className="textAreaContainer">
+          {renderArea === "note" &&
+            <textarea
+              ref={textAreaRef}
+              onFocus={handleFocus}
+              onInput={handleInputChange}
+              onBlur={handleUnfocus}
+              label="Main notes area"
+              className="notes-textarea"
+            />
+          }
+          </div>
+        </div>
+      );
   }
 };
 

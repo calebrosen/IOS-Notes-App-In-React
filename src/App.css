@@ -183,7 +183,7 @@ textarea,body,html {
 
 h1.notesListH1 {
   color: #FFF;
-  font-size: 2.35rem;
+  font-size: 2.5rem;
   font-weight: 700;
 }
 
@@ -217,11 +217,27 @@ h1.notesListH1 {
 }
 
 .existingNote {
-  color: #FFF; 
+  margin: 2rem 0;
+}
+
+.existingNoteInner {
+  background-color: #353535;
+  padding: 10px 12px 4px 12px;
+  border-radius: 6px;
+}
+
+.existingNoteTitle {
+  color: #FFF;
+  font-size: 1.35rem;
+  font-weight: 550;
 }
 
 .existingNoteDate {
   color: #FFF;
-  font-weight: 600;
-  font-size: 1.3rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.existingNoteTime {
+  color: #98989f;
 }
