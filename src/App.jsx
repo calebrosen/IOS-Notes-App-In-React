@@ -211,10 +211,10 @@ const NotesApp = () => {
   };
 
   const insertNoteIntoLocalStorage = (noteID) => {
-    // My idea is to insert it with a key such as 'IOSNotes' or whatever
-    // Then, as the value, use unix epoch time and do a dash or some character separator, and then after that just the note content
     localStorage.setItem(
+      // Inserting noteID for use as a key after IOSNotesApp prefix
       "IOSNotesApp" + noteID,
+      // Inserting date for use on the main list page and a unique character to seperate the date and content (which will be inserted afterwards)
       Date.now() + "⌇"
     );
   };
@@ -323,6 +323,8 @@ const NotesApp = () => {
     RestoreText();
   }, [restoreWith]);
 
+  // This function is called when restoreWith is updated (the useEffect above), and initiates after
+  // a very slight delay to ensure the element is accessible. Will likely be improved later
   const RestoreText = () => {
     if (restoreWith !== '') {
       setTimeout(function() {
@@ -366,7 +368,8 @@ const NotesApp = () => {
       setSearchText(val);
     };
 
-    //refocusing to fix issue with unfocus due to handleSearchChange messing with the state
+    // Refocusing to fix issue with unfocus due to handleSearchChange messing with the state
+    // This can be improved later
     useEffect(() => {
       if (searchRef != '') {
         searchRef.current.focus()
